@@ -7,7 +7,6 @@ from product_manager import ProductManager
 import re
 import inspect
 
-
 class TestProductManager(TestCase):
 
     _product_manager = None
@@ -22,6 +21,11 @@ class TestProductManager(TestCase):
         cellphone5 = Cellphone(5, "Pixel 4", 1000, 500, "03/21/2018", "04/21/2019", True, "G Camera", "Google Lock", 88)
         self._product_manager.add(cellphone5)
 
+    def logPoint(self):
+        currentTest= self.id().split('.')[-1]
+        callingFunction= inspect.stack()[1][3]
+        print('in %s - %s()' % (currentTest, callingFunction))
+
     def tearDown(self):
         products = self._product_manager.get_all()
         ids = []
@@ -34,13 +38,9 @@ class TestProductManager(TestCase):
             self._product_manager.delete(id)
 
         self._product_manager = None
-
-    def logPoint(self):
-        currentTest= self.id().split('.')[-1]
-        callingFunction= inspect.stack()[1][3]
-        print('in %s - %s()' % (currentTest, callingFunction))
-
+    
     def test_add(self):
+        """ 010A - Valid add """
         all_products = self._product_manager.get_all()
         self.assertTrue(len(all_products) == 2)
         """Add to products"""
@@ -48,15 +48,27 @@ class TestProductManager(TestCase):
         self._product_manager.add(computer3)
         all_products = self._product_manager.get_all()
         self.assertTrue(len(all_products) == 3)
+
+    def test_add_invalid(self):
+        """ 010B - Invalid add """
+        undefined_computer = None
+        self.assertRaisesRegex(ValueError, "Product cannot be none.", self._product_manager.add, undefined_computer)
     
     def test_get(self):
+        """ 020A - Valid get """
         computer1 = self._product_manager.get(1)
         self.assertEqual("Huawei Matebook X Pro", computer1.get_name())
 
         cellphone5 = self._product_manager.get(2)
         self.assertEqual("Pixel 4", cellphone5.get_name())
 
+    def test_get_invalid(self):
+        """ 020B - Invalid get """
+        not_number_id = "not number"
+        self.assertRaisesRegex(ValueError, "ID is not a number!", self._product_manager.get, not_number_id)
+
     def test_get_all(self):
+        """ 030A - Valid get_all """
         products = self._product_manager.get_all()
         self.assertEqual(2, len(products))
         for product in products:
@@ -67,15 +79,22 @@ class TestProductManager(TestCase):
                 self.assertEqual("Pixel 4", product_name)
 
     def test_get_all_by_type(self):
-        computers = self._product_manager.get_all_by_type("computer")
-        cellphones = self._product_manager.get_all_by_type("cellphone")
+        """ 040A - Valid get_all_by_type """
+        computers = self._product_manager.get_all_by_type(AbstractProduct.COMPUTER_TYPE)
+        cellphones = self._product_manager.get_all_by_type(AbstractProduct.CELLPHONE_TYPE)
         self.assertEqual(1, len(computers))
         self.assertEqual(1, len(cellphones))
         self.assertEqual("Huawei Matebook X Pro", computers[0].get_name())
         self.assertEqual("Pixel 4", cellphones[0].get_name())
 
+    def test_get_all_by_type_invalid(self):
+        """ 040B - Invalid get_all_by_type """
+        undefined_type = None
+        self.assertRaisesRegex(ValueError, "Type cannot be undefined.", self._product_manager.get_all_by_type, undefined_type)
+
     def test_update(self):
-        computers = self._product_manager.get_all_by_type("computer")
+        """ 050A - Valid update """
+        computers = self._product_manager.get_all_by_type(AbstractProduct.COMPUTER_TYPE)
         computer1 = computers[0]
         old_computer_price = computer1.get_price()
         new_computer_price = old_computer_price + 100
@@ -99,10 +118,16 @@ class TestProductManager(TestCase):
         self.assertNotEqual(computer1.get_price(), updated_computer.get_price())
         self.assertEqual(new_computer_price, updated_computer.get_price())
 
+    def test_update_invalid(self):
+        """ 050B - Invalid update """
+        undefined_computer = None
+        self.assertRaisesRegex(ValueError, "Product cannot be none.", self._product_manager.update, undefined_computer)
+
     def test_delete(self):
+        """ 060A - Valid delete """
         products = self._product_manager.get_all()
         computer1 = products[0]
-        self.assertEqual("computer", computer1.get_type())
+        self.assertEqual(AbstractProduct.COMPUTER_TYPE, computer1.get_type())
         self.assertEqual(1, computer1.get_id())
         self.assertEqual("Huawei Matebook X Pro", computer1.get_name())
 
@@ -118,6 +143,11 @@ class TestProductManager(TestCase):
                 break
 
         self.assertTrue(deleted)
+
+    def test_delete_invalid(self):
+        """ 060B - Invalid delete """
+        not_number_id = "not number"
+        self.assertRaisesRegex(ValueError, "ID is not a number!", self._product_manager.delete, not_number_id)
 
 if __name__ == "__main__":
     unittest.main()
