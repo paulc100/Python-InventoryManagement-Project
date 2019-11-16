@@ -4,6 +4,7 @@ from abstract_product import AbstractProduct
 from computer import Computer
 from cellphone import Cellphone
 from product_manager import ProductManager
+from product_stats import ProductStats
 import re
 import inspect
 
@@ -148,6 +149,36 @@ class TestProductManager(TestCase):
         """ 060B - Invalid delete """
         not_number_id = "not number"
         self.assertRaisesRegex(ValueError, "ID is not a number!", self._product_manager.delete, not_number_id)
+
+    def test_get_product_stats(self):
+        """ 070A - Valid get_product_stats """
+
+        computer2 = Computer(9, "IBM Thinkpad", 1400, 1000, "07/18/2019", "08/21/2019", True, "Nvidia Geforce", "Dbrand", "DDR4")
+        computer3 = Computer(99, "Macbook Pro", 2000, 1000, "04/11/2019", "08/21/2019", True, "Nvidia Geforce", "Dbrand", "DDR4")
+        cellphone2 = Cellphone(100, "iPhone 11 Pro Max", 2000, 500, "07/18/2019", "08/21/2019", True, "Nvidia Geforce", "Dbrand", "DDR4")
+        cellphone3 = Cellphone(101, "Samsung Galaxy Note 10", 1400, 400, "07/18/2019", "08/21/2019", True, "Nvidia Geforce", "Dbrand", "DDR4")
+        self._product_manager.add(computer2)
+        self._product_manager.add(computer3)
+        self._product_manager.add(cellphone2)
+        self._product_manager.add(cellphone3)
+
+        product_stats = self._product_manager.get_product_stats()
+
+        num_products = product_stats.get_total_num_products()
+        num_computers = product_stats.get_num_computers()
+        num_cellphones = product_stats.get_num_cellphones()
+        avg_computer_profit = product_stats.get_avg_computer_profit()
+        avg_cellphone_profit = product_stats.get_avg_cellphone_profit()
+        avg_computer_shelf_time = product_stats.get_avg_computer_shelf_time()
+        avg_cellphone_shelf_time = product_stats.get_avg_cellphone_shelf_time()
+
+        self.assertEqual(6, num_products)
+        self.assertEqual(3, num_computers)
+        self.assertEqual(3, num_cellphones)
+        self.assertEqual(600, avg_computer_profit)
+        self.assertEqual(1000, avg_cellphone_profit)
+        self.assertEqual(66, avg_computer_shelf_time)
+        self.assertEqual(154, avg_cellphone_shelf_time)
 
 if __name__ == "__main__":
     unittest.main()

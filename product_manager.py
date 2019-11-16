@@ -1,4 +1,5 @@
 from abstract_product import AbstractProduct
+from product_stats import ProductStats
 from computer import Computer
 from cellphone import Cellphone
 
@@ -71,3 +72,7 @@ class ProductManager:
                 self._products.remove(product)
                 return
         raise ValueError("%d does not exist." %(product.get_id()))
+
+    def get_product_stats(self):
+        product_stats = ProductStats(self)
+        return product_stats

@@ -4,8 +4,8 @@ class Computer(AbstractProduct):
 
     _COMPUTER_TYPE = "Computer"
 
-    """Representation of a computer"""
     def __init__(self, id, name, price, cost, date_stocked, date_sold, is_sold, graphics_card, case, memory_type):
+        """Representation of a computer"""
         AbstractProduct._validate_string_input(AbstractProduct.GRAPHICS_CARD, graphics_card)
         AbstractProduct._validate_string_input(AbstractProduct.CASE, case)
         AbstractProduct._validate_string_input(AbstractProduct.MEMORY_TYPE, memory_type)
@@ -15,20 +15,20 @@ class Computer(AbstractProduct):
         self._case = case
         self._memory_type = memory_type
     
-    """Gets graphics card details"""
     def get_graphics_card(self):
+        """Gets graphics card details"""
         return self._graphics_card
 
-    """Gets case details"""
     def get_case(self):
+        """Gets case details"""
         return self._case
 
-    """Gets memory type details"""
     def get_memory_type(self):
+        """Gets memory type details"""
         return self._memory_type
 
-    """Gets all details of computer"""
     def get_details(self):
+        """Gets all details of computer"""
 
         details = "Your " + self._COMPUTER_TYPE \
         + " is a " + self._name \
@@ -37,6 +37,6 @@ class Computer(AbstractProduct):
         + " at the price of " + str(self._price)
         return details
 
-    """Gets type"""
     def get_type(self):
+        """Gets type"""
         return self._COMPUTER_TYPE

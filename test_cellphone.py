@@ -95,6 +95,5 @@ class TestCellphone(TestCase):
         """ 130A - Valid get_screen_body_ratio """
         self.assertEqual(88, self._cellphone.get_screen_body_ratio())
 
-
 if __name__ == "__main__":
     unittest.main()
