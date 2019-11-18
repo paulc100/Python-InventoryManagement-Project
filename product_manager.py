@@ -83,11 +83,12 @@ class ProductManager:
         raise ValueError("%d does not exist." %(id))
 
     def get_product_stats(self):
+        """ Retreive inventory stats """
         product_stats = ProductStats(self)
         return product_stats
 
     def _read_products_from_file(self):
-        #print("_read_products_from_file() is called")
+        """ Read txt file with products """
         if not os.path.exists(self._filepath):
             return
 
@@ -126,11 +127,10 @@ class ProductManager:
             self._next_available_id = largest_id + 1
 
     def _write_products_to_file(self):
-        #print("_write_products_to_file() is called")
+        """ Write in txt file with products """
         data = []
         for product in self._products:
             json_data = product.to_dict()
             data.append(json_data)
-        #print(data)
         with open(self._filepath, 'w+') as output_file:
             json.dump(data, output_file)

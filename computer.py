@@ -1,11 +1,12 @@
 from abstract_product import AbstractProduct
 
 class Computer(AbstractProduct):
-
+    """Representation of a computer"""
+    
     _COMPUTER_TYPE = "Computer"
 
     def __init__(self, id, name, price, cost, date_stocked, date_sold, is_sold, graphics_card, case, memory_type):
-        """Representation of a computer"""
+        """Constructor of a computer"""
         AbstractProduct._validate_string_input(AbstractProduct.GRAPHICS_CARD, graphics_card)
         AbstractProduct._validate_string_input(AbstractProduct.CASE, case)
         AbstractProduct._validate_string_input(AbstractProduct.MEMORY_TYPE, memory_type)
@@ -42,6 +43,7 @@ class Computer(AbstractProduct):
         return self._COMPUTER_TYPE
 
     def to_dict(self):
+        """Creates a dictionary with the data"""
         dict = {
             "id": self._id,
             "name": self._name,

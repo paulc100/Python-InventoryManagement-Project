@@ -1,11 +1,12 @@
 from abstract_product import AbstractProduct
 
 class Cellphone(AbstractProduct):
+    """Representation of a Cellphone"""
     
     _CELLPHONE_TYPE = "Cellphone"
     
     def __init__(self, id, name, price, cost, date_stocked, date_sold, is_sold, camera, security, screen_body_ratio):
-        """Representation of a Cellphone"""
+        """Constructor of a Cellphone"""
         AbstractProduct._validate_string_input(AbstractProduct.CAMERA, camera)
         AbstractProduct._validate_string_input(AbstractProduct.SECURITY, security)
         AbstractProduct._validate_string_input(AbstractProduct.SCREEN_BODY_RATIO, screen_body_ratio)
@@ -42,6 +43,7 @@ class Cellphone(AbstractProduct):
         return self._CELLPHONE_TYPE
 
     def to_dict(self):
+        """Creates a dictionary with the data"""
         dict = {
             "id": self._id,
             "name": self._name,

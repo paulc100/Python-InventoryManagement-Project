@@ -11,10 +11,12 @@ import inspect
 
 
 class TestProductManager(TestCase):
+	""" Unit Tests for the Manager Class """
 	_product_manager = None
 
 	@patch('builtins.open', mock_open(read_data=''))
 	def setUp(self):
+		""" Set up the test """
 		self.logPoint()
 		self._product_manager = ProductManager("test_products.txt")
 
@@ -26,12 +28,14 @@ class TestProductManager(TestCase):
 		self._product_manager.add_product(cellphone5)
 
 	def logPoint(self):
+		""" Log the tests """
 		currentTest = self.id().split('.')[-1]
 		callingFunction = inspect.stack()[1][3]
 		print('in %s - %s()' % (currentTest, callingFunction))
 
 	@patch('builtins.open', mock_open(read_data=''))
 	def tearDown(self):
+		""" Take down tests """
 		products = self._product_manager.get_all()
 		ids = []
 
@@ -109,7 +113,6 @@ class TestProductManager(TestCase):
 		computer1 = computers[0]
 		old_computer_price = computer1.get_price()
 		new_computer_price = old_computer_price + 100
-		# new_computer1 = Computer(1, "Huawei Matebook X Pro", new_computer_price, 1200, 7/21/19, 8/23/19, True, "Nvidia Geforce", "Dbrand", "DDR4")
 		new_computer1 = Computer( \
 			computer1.get_id(), \
 			computer1.get_name(), \

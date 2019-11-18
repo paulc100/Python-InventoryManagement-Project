@@ -78,11 +78,19 @@ def update_product(id):
 @app.route('/product_manager/products/<int:id>', methods=['DELETE'])
 def remove_product_by_id(id):
 	""" Removes a product by id """
+	product = prod_manager.get_product_by_id(id)
 	try:
-		product = prod_manager.remove_product_by_id(id)
-		response = app.response_class(
+		if product == None:
+			response = app.response_class(
+			response = "Product does not exist",
+			status=404
+			)
+			return response
+		else:
+			prod_manager.remove_product_by_id(id)
+			response = app.response_class(
 			status=200
-		)
+			)
 	except ValueError as e:
 		response = app.response_class(
 			response=str(e),

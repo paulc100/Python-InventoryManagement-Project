@@ -18,6 +18,7 @@ class TestComputer(TestCase):
         self.assertIsNotNone(self._computer)
     
     def logPoint(self):
+        """ Logs tests """
         currentTest= self.id().split('.')[-1]
         callingFunction= inspect.stack()[1][3]
         print('in %s - %s()' % (currentTest, callingFunction))
