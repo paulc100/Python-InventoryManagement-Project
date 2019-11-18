@@ -95,5 +95,22 @@ class TestComputer(TestCase):
         """ 130A - Valid get_memory_type """
         self.assertEqual("DDR4", self._computer.get_memory_type())
 
+    def test_to_dict(self):
+        """ 140A - Valid get_details """
+        expected_dict = {
+            "id": self._computer.get_id(),
+            "name": self._computer.get_name(),
+            "price": self._computer.get_price(),
+            "cost": self._computer.get_cost(),
+            "date_stocked": self._computer.get_date_stocked(),
+            "date_sold": self._computer.get_date_sold(),
+            "is_sold": self._computer.get_is_sold(),
+            "graphics_card": self._computer.get_graphics_card(),
+            "case": self._computer.get_case(),
+            "memory_type": self._computer.get_memory_type(),
+            "type": self._computer.get_type()
+        }
+        self.assertEqual(expected_dict, self._computer.to_dict())
+
 if __name__ == "__main__":
     unittest.main()

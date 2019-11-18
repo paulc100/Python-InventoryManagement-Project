@@ -95,5 +95,22 @@ class TestCellphone(TestCase):
         """ 130A - Valid get_screen_body_ratio """
         self.assertEqual(88, self._cellphone.get_screen_body_ratio())
 
+    def test_to_dict(self):
+        """ 140A - Valid get_details """
+        expected_dict = {
+            "id": self._cellphone.get_id(),
+            "name": self._cellphone.get_name(),
+            "price": self._cellphone.get_price(),
+            "cost": self._cellphone.get_cost(),
+            "date_stocked": self._cellphone.get_date_stocked(),
+            "date_sold": self._cellphone.get_date_sold(),
+            "is_sold": self._cellphone.get_is_sold(),
+            "camera": self._cellphone.get_camera(),
+            "security": self._cellphone.get_security(),
+            "screen_body_ratio": self._cellphone.get_screen_body_ratio(),
+            "type": self._cellphone.get_type()
+        }
+        self.assertEqual(expected_dict, self._cellphone.to_dict())
+
 if __name__ == "__main__":
     unittest.main()

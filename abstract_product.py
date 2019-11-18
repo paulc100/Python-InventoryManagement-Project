@@ -83,6 +83,9 @@ class AbstractProduct:
     def get_type(self):
         raise NotImplementedError('Abstract method not implemented yet')
 
+    def to_dict(self):
+        raise NotImplementedError("Abstract method not implemented yet")
+
     @staticmethod
     def _validate_string_input(display_name, str_value):
         """Private helper to validate string values"""

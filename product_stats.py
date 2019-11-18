@@ -29,6 +29,8 @@ class ProductStats:
             profit = comp.get_price() - comp.get_cost()
             total_profit = total_profit + profit
             num_computers = num_computers + 1
+        if num_computers == 0:
+            return 0
         avg_profit = total_profit / num_computers
         return avg_profit
 
@@ -39,6 +41,8 @@ class ProductStats:
             profit = cell.get_price() - cell.get_cost()
             total_profit = total_profit + profit
             num_cellphones = num_cellphones + 1
+        if num_cellphones == 0:
+            return 0
         avg_profit = total_profit / num_cellphones
         return avg_profit
 
@@ -50,6 +54,8 @@ class ProductStats:
             shelf_time = date_diff.days
             total_shelf_time = total_shelf_time + shelf_time
             num_computers = num_computers + 1
+        if num_computers == 0:
+            return 0
         avg_computer_shelf_time = int(total_shelf_time / num_computers)
         return avg_computer_shelf_time
 
@@ -61,6 +67,8 @@ class ProductStats:
             shelf_time = date_diff.days
             total_shelf_time = total_shelf_time + shelf_time
             num_cellphones = num_cellphones + 1
+        if num_cellphones == 0:
+            return 0
         avg_cellphone_shelf_time = int(total_shelf_time / num_cellphones)
         return avg_cellphone_shelf_time
 

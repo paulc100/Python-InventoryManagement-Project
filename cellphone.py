@@ -40,3 +40,19 @@ class Cellphone(AbstractProduct):
     def get_type(self):
         """Gets the type"""
         return self._CELLPHONE_TYPE
+
+    def to_dict(self):
+        dict = {
+            "id": self._id,
+            "name": self._name,
+            "price": self._price,
+            "cost": self._cost,
+            "date_stocked": self._date_stocked,
+            "date_sold": self._date_sold,
+            "is_sold": self._is_sold,
+            "camera": self._camera,
+            "security": self._security,
+            "screen_body_ratio": self._screen_body_ratio,
+            "type": self._CELLPHONE_TYPE
+        }
+        return dict

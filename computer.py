@@ -40,3 +40,19 @@ class Computer(AbstractProduct):
     def get_type(self):
         """Gets type"""
         return self._COMPUTER_TYPE
+
+    def to_dict(self):
+        dict = {
+            "id": self._id,
+            "name": self._name,
+            "price": self._price,
+            "cost": self._cost,
+            "date_stocked": self._date_stocked,
+            "date_sold": self._date_sold,
+            "is_sold": self._is_sold,
+            "graphics_card": self._graphics_card,
+            "case": self._case,
+            "memory_type": self._memory_type,
+            "type": self._COMPUTER_TYPE
+        }
+        return dict
