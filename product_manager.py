@@ -1,3 +1,6 @@
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
 from abstract_product import AbstractProduct
 from product_stats import ProductStats
 from computer import Computer
@@ -8,43 +11,60 @@ import os.path
 class ProductManager:
     """ This is the product manager """
 
-    _products = []
-    _next_available_id = 1
-    _filepath = None
+    PRODUCT_LABEL = "Product Name"
+    ID_LABEL = "ID"
 
-    def __init__(self, filepath):
-        """ Constructs a product object """
-        self._filepath = filepath
-        self._read_products_from_file()
+    def __init__(self, db_name):
+        """ Contructs a product object """
+        if db_name is None or db_name == "":
+            raise ValueError("DB Name cannot be undefined")
+
+        engine = create_engine("sqlite:///" + db_name)
+        self._db_session = sessionmaker(bind=engine, expire_on_commit=False)
 
     def add_product(self, product):
-        """ Adds a product to the manager """
+        """ Adds a product """
 
         AbstractProduct._validate_object_input("Product", product)
-        if product in self._products:
-            raise ValueError("Product already exists in the inventory")
-        else:
-            unique_id = self._next_available_id
 
-            product.set_id(unique_id)
-            self._products.append(product)
-            self._write_products_to_file()
-            self._next_available_id = unique_id + 1
-            return unique_id
+        id = product.get_id()
+
+        if id is not None:
+            product = self.get_product_by_id(id)
+            if product is not None:
+                raise ValueError("Product already exists!")
+
+        session = self._db_session()
+
+        session.add(product)
+        session.commit()
+
+        session.close()
+
+        return product.get_id()
 
     def get_product_by_id(self, id):
-        """ Retrieves product object from id """
-
+        """ Returns a product with matching id, returns None if no matching id exists """
         AbstractProduct._validate_number_input(AbstractProduct.ID, id)
-        for product in self._products:
-            if product.get_id() == id:
-                return product
-        return None
+        session = self._db_session()
+        
+        product = session.query(Computer).filter(Computer.id == id).filter(Computer.type == AbstractProduct.COMPUTER_TYPE).first()
+            
+        if product is None:
+            product = session.query(Cellphone).filter(Cellphone.id == id).filter(Cellphone.type == AbstractProduct.CELLPHONE_TYPE).first()
+
+        session.close()
+        return product
 
     def get_all(self):
         """ Retrieves all product objects """
+        session = self._db_session()
+        products1 = session.query(Computer).filter(Computer.type == AbstractProduct.COMPUTER_TYPE).all()
+        products2 = session.query(Cellphone).filter(Cellphone.type == AbstractProduct.CELLPHONE_TYPE).all()
+        products = products1 + products2
 
-        return self._products
+        session.close()
+        return products
 
     def get_all_by_type(self, type):
         """ Retrieves all product objects from type """
@@ -52,85 +72,62 @@ class ProductManager:
         AbstractProduct._validate_string_input("Type", type)
         if type != AbstractProduct.CELLPHONE_TYPE and type != AbstractProduct.COMPUTER_TYPE:
             raise ValueError("Only computer or cellphone type is supported!")
-        products = []
-        for product in self._products:
-            if product.get_type() == type:
-                products.append(product)
+        
+        session = self._db_session()
+
+        if type == AbstractProduct.COMPUTER_TYPE:
+            products = session.query(Computer).filter(Computer.type == type).all()
+        elif type == AbstractProduct.CELLPHONE_TYPE:
+            products = session.query(Cellphone).filter(Cellphone.type == type).all()
+
+        session.close()
         return products
 
     def update_product(self, product):
-        """ Replaces a product with a new one """
+        """ Updates a product """
 
         AbstractProduct._validate_object_input("Product", product)
-        should_update = False
-        for prod in self._products:
-            if prod.get_id() == product.get_id():
-                self._products.remove(prod)
-                self._products.append(product)
-                self._write_products_to_file()
-                return
-        raise ValueError("%d does not exist." %(product.get_id()))
+        product_id = product.get_id()
+
+        if product_id == None:
+            raise ValueError("Only existing products can be updated!")
+
+        session = self._db_session()
+        
+        product_in_db = session.query(Computer).filter(Computer.id == product_id).first()
+        if product_in_db is None:
+            product_in_db = session.query(Cellphone).filter(Cellphone.id == product_id).first()
+        
+        if product_in_db is None:
+            raise ValueError("Product does not exist in inventory!")
+
+        if product_in_db.get_is_sold() == 1:
+            raise ValueError("Product has already been sold!")
+
+        product_in_db.set_price(product.get_price())
+
+        if product.get_type() == AbstractProduct.COMPUTER_TYPE:
+            product_in_db.set_case(product.get_case())
+        elif product.get_type() == AbstractProduct.CELLPHONE_TYPE:
+            product_in_db.set_camera(product.get_camera())
+
+        session.commit()
+
+        session.close()
+
 
     def remove_product_by_id(self, id):
         """ Removes a product via an id """
 
         AbstractProduct._validate_number_input(AbstractProduct.ID, id)
-        for product in self._products:
-            if product.get_id() == id:
-                self._products.remove(product)
-                self._write_products_to_file()
-                return
-        raise ValueError("%d does not exist." %(id))
+        session = self._db_session()
+
+        product_in_db = session.query(AbstractProduct).filter(AbstractProduct.id == id).first()
+        session.delete(product_in_db)
+        session.commit()
+
+        session.close()
 
     def get_product_stats(self):
-        """ Retreive inventory stats """
         product_stats = ProductStats(self)
         return product_stats
-
-    def _read_products_from_file(self):
-        """ Read txt file with products """
-        if not os.path.exists(self._filepath):
-            return
-
-        with open(self._filepath, 'r') as input_file:
-            data = json.load(input_file)
-            largest_id = 0
-            for json_data in data:
-                type = json_data["type"]
-                if type == AbstractProduct.COMPUTER_TYPE:
-                    id = json_data["id"]
-                    name = json_data["name"]
-                    price = json_data["price"]
-                    cost = json_data["cost"]
-                    date_stocked = json_data["date_stocked"]
-                    date_sold = json_data["date_sold"]
-                    is_sold = json_data["is_sold"]
-                    graphics_card = json_data["graphics_card"]
-                    case = json_data["case"]
-                    memory_type = json_data["memory_type"]
-                    product = Computer(id, name, price, cost, date_stocked, date_sold, is_sold, graphics_card, case, memory_type)
-                elif type == AbstractProduct.CELLPHONE_TYPE:
-                    id = json_data["id"]
-                    name = json_data["name"]
-                    price = json_data["price"]
-                    cost = json_data["cost"]
-                    date_stocked = json_data["date_stocked"]
-                    date_sold = json_data["date_sold"]
-                    is_sold = json_data["is_sold"]
-                    camera = json_data["camera"]
-                    security = json_data["security"]
-                    screen_body_ratio = json_data["screen_body_ratio"]
-                    product = Cellphone(id, name, price, cost, date_stocked, date_sold, is_sold, camera, security, screen_body_ratio)
-                self._products.append(product)
-                if largest_id < id:
-                    largest_id = id
-            self._next_available_id = largest_id + 1
-
-    def _write_products_to_file(self):
-        """ Write in txt file with products """
-        data = []
-        for product in self._products:
-            json_data = product.to_dict()
-            data.append(json_data)
-        with open(self._filepath, 'w+') as output_file:
-            json.dump(data, output_file)

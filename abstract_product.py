@@ -1,5 +1,7 @@
-class AbstractProduct:
-    """This is the representation of a product """
+from base import Base
+from sqlalchemy import *
+
+class AbstractProduct(Base):
 
     CELLPHONE_TYPE = "Cellphone"
     COMPUTER_TYPE = "Computer"
@@ -19,73 +21,77 @@ class AbstractProduct:
     SECURITY = "Security"
     SCREEN_BODY_RATIO = "Screen body ratio"
 
-    def __init__(self, id, name, price, cost, date_stocked, date_sold, is_sold):
-        """This is the constructor of a product"""
+    __tablename__ = "products"
 
-        AbstractProduct._validate_number_input(AbstractProduct.ID, id)
+    id = Column(Integer, primary_key=True)
+    name = Column(String(100))
+    price = Column(Integer)
+    cost = Column(Integer)
+    date_stocked = Column(String(100))
+    date_sold = Column(String(100))
+    is_sold = Column(Integer)
+    type = Column(String(100))
+
+    """This is the representation of a product"""
+    def __init__(self, name, price, cost, date_stocked, date_sold, is_sold, type):
+
         AbstractProduct._validate_string_input(AbstractProduct.NAME, name)
         AbstractProduct._validate_number_input(AbstractProduct.PRICE, price)
         AbstractProduct._validate_number_input(AbstractProduct.COST, cost)
         AbstractProduct._validate_string_input(AbstractProduct.DATE_STOCKED, date_stocked)
-        AbstractProduct._validate_string_input(AbstractProduct.DATE_SOLD, date_sold)
+        #AbstractProduct._validate_string_input(AbstractProduct.DATE_SOLD, date_sold)
 
         """Makes product object"""
-        self._id = id
-        self._name = name
-        self._price = price
-        self._cost = cost
-        self._date_stocked = date_stocked
-        self._date_sold = date_sold
-        self._is_sold = is_sold
-    
+        self.name = name
+        self.price = price
+        self.cost = cost
+        self.date_stocked = date_stocked
+        self.date_sold = date_sold
+        self.is_sold = is_sold
+        self.type = type
+
+    """ Gets id """
     def get_id(self):
-        """Gets product id"""
-        return self._id
+        return self.id
 
-    def set_id(self, id):
-        """Sets product id"""
-        AbstractProduct._validate_number_input(AbstractProduct.ID, id)
-        self._id = id
-
+    """Gets product name"""
     def get_name(self):
-        """Gets product name"""
-        return self._name
+        return self.name
 
+    """Gets product price"""
     def get_price(self):
-        """Gets product price"""
-        return self._price
+        return self.price
 
+    """Sets product price"""
     def set_price(self, price):
-        """Sets product price"""
         AbstractProduct._validate_number_input(AbstractProduct.PRICE, price)
-        self._price = price
+        self.price = price
 
+    """Gets product cost"""
     def get_cost(self):
-        """Gets product cost"""
-        return self._cost
+        return self.cost
 
+    """Gets date that product is stocked"""
     def get_date_stocked(self):
-        """Gets date that product is stocked"""
-        return self._date_stocked
+        return self.date_stocked
 
+    """Gets date that product is sold"""
     def get_date_sold(self):
-        """Gets date that product is sold"""
-        return self._date_sold
+        return self.date_sold
 
+    """Returns a boolean to see if product is sold or not"""
     def get_is_sold(self):
-        """Returns a boolean to see if product is sold or not"""
-        return self._is_sold
+        return self.is_sold
 
+    """Gets product details"""
     def get_details(self):
-        """Gets product details"""
         raise NotImplementedError('Abstract method not implemented yet')
 
+    """Gets product type"""
     def get_type(self):
-        """Gets product type"""
-        raise NotImplementedError('Abstract method not implemented yet')
+        return self.type
 
     def to_dict(self):
-        """Abstract Method for creating dictionaries"""
         raise NotImplementedError("Abstract method not implemented yet")
 
     @staticmethod
